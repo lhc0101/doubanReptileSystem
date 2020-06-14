@@ -1,4 +1,4 @@
-Django==3.0.3
+Django==3.0.7
 mongoengine==0.19.1
 pyquery==1.4.1
 jieba==0.42.1
