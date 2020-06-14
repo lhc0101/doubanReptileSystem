@@ -1,0 +1,56 @@
+{% extends 'index.html' %}
+
+
+{% block content %}
+    <div id="container" class="container-fluid">
+        <table class="table table-condensed table-hover table-responsive ">
+            <thead>
+            <th>top250 排名</th>
+            <th>名称</th>
+            <th>导演&主演</th>
+            <th>quota</th>
+            </thead>
+            <tbody>
+            {% for foo in top250 %}
+                <tr>
+                    <td>
+                        第{{ forloop.counter }}
+                    </td>
+                    <td>{{ foo.movieName }}</td>
+                    <td>{{ foo.direct_actor }}</td>
+                    <td>{{ foo.quota }}</td>
+                    <td id="{{ foo.id }}"></td>
+                    <td>
+                        <form action="/search/" method="get">
+                            <div style="visibility: hidden;">
+                                <input type="text" value="{{ foo.movieName }}" name="movieName">
+                            </div>
+                            <input type="submit" class="btn-primary btn" value="查看影片信息">
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        {#$(document).ready(function () {#}
+        {#    alert("FUCK YOU")#}
+        {#    $.ajax({#}
+        {#        type: "GET",#}
+        {#        url: "/getImage",#}
+        {#        data: {#}
+        {#            'movieId':{{ foo.id }}#}
+        {#        },#}
+        {#        success: function (msg) {#}
+        {#            $('#fuck1').append(msg['imageF']);#}
+        {#        },#}
+        {#        error: function (msg) {#}
+        {#            alert("加载图片失败")#}
+        {#        }#}
+        {#    })#}
+        {#})#}
+    </script>
+{% endblock %}

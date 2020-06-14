@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>首页</title>#}
+{#</head>#}
+<link rel="stylesheet" type="text/css" href="../static/css/index_work.css">
+<body>
+<style type="text/css">
+    h2{text-align: center;}
+    div{border: 1px solid red;width: 600px;height: 400px;style-size: 450px;}
+</style>
+    <table>
+        <thead>
+{#            <th>用户名</th>#}
+            <th>评论</th>
+{#            <th>推荐度</th>#}
+            <th>评论时间</th>
+        </thead>
+        <tbody>
+            {% for item in invitation %}
+                <tr>
+{#                    <td>{{ item.id }}</td>#}
+                    <td>{{ item.comment }}</td>
+{#                    <td>{{ item.vote }}</td>#}
+                    <td><a>{{ item.comment_time }}</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

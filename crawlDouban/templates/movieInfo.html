@@ -1,0 +1,267 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+    <div id="movieInfo" class="container-fluid" xmlns="http://www.w3.org/1999/html">
+
+    <table  class="table  table-hover table-responsive">
+        <tbody>
+        <tr>
+            <td><span>{{ movieInfo.movieName }}</span></td>
+            <td><p id="fuck1"></p></td>
+        </tr>
+        <tr>
+            <td><span class="font-weight-bold">导演</span>:</td>
+            <td><span  >{{ movieInfo.daoYan }}</span></td>
+        </tr>
+        <tr>
+            <td><span class="font-weight-bold">编剧</span>: </td>
+            <td><span>{{ movieInfo.bianJu }}</span></td>
+        </tr>
+        <tr>
+            <td><span class="font-weight-bold">主演</span>:</td>
+            <td><span>{{ movieInfo.zhuYan }}</span></td>
+        </tr>
+        <tr>
+            <td><span class="font-weight-bold">类型</span>:</td>
+            <td><span>{{ movieInfo.leiXing }}</span></td>
+        </tr>
+        <tr>
+            <td><span class="font-weight-bold">简介</span>:</td>
+            <td><span>{{ movieInfo.intro }}</span></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table class="table  table-hover table-responsive">
+        <thead>
+{#            <th>用户名</th>#}
+            <th>精选评论</th>
+            <th>评分</th>
+{#            <th>评论时间</th>#}
+        </thead>
+        <tbody>
+            {% for item in invitation %}
+                <tr>
+{#                    <td>{{ item.id }}</td>#}
+                    <td>{{ item.comment }}</td>
+                    <td>{{ item.vote }}</td>
+{#                    <td><a>{{ item.comment_time }}</a></td>#}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+{#        <span class="font-weight-bold">制片国家/地区</span>: <span>{{ movieInfo.zhiPianGuoJia }}</span>#}
+{#        <span class="font-weight-bold">语言</span>: <span>{{ movieInfo.yuYan }}</span>#}
+{#        <span class="font-weight-bold">上映日期</span>: <span>{{ movieInfo.shangYinRiQi }}</span><br>#}
+{#        <span class="font-weight-bold">片长</span>: <span>{{ movieInfo.pianChang }}</span>#}
+{#        <span class="font-weight-bold">又名</span>: <span>{{ movieInfo.youMing }}</span>#}
+{#        <span class="font-weight-bold">IMDb链接</span>: <span>{{ movieInfo.ImdbLink }}</span>#}
+{#        <span class="font-weight-bold">ID </span>: <span>{{ movieInfo.id }}</span> <br>#}
+        {#        <span id="" class="font-weight-bold">评分 </span>: <span>{{ movieInfo.pingFeng }}</span>#}
+
+{#        <button id="getCloud" class="btn-primary">生成词云</button>#}
+
+    <form action="/recommend/" ,method="get" class="form-inline" >
+    {#        <input class="form-control" type="text" name="movieName" value={{ movieInfo.movieName }} >#}
+        <div align="center">
+            <button id="cueHidden2" style="text-align:center" type="submit" class="btn-primary btn" name="movieName" value={{ movieInfo.movieName }}>影片推荐数据生成成功</button>
+        </div>
+    </form>
+
+    <div>
+        <p id="cueHidden" style="text-align:center" class="font-weight-bold">评论数据分析处理中....请稍后</p>
+    </div>
+
+
+
+
+{#    <form action="/recommend/" ,method="get" class="form-inline" style="text-align:center">#}
+{#        <input class="form-control" type="text" name="movieName" value={{ movieInfo.movieName }} >#}
+{#        <button type="submit" class="btn-primary btn" name="movieName" value={{ movieInfo.movieName }}>按钮居中</button>#}
+{#    </form>#}
+
+
+    <div class="row">
+        <div class="col-lg-4 container">
+            {{ imageF  }}
+{#            <img src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p480747492.webp" alt="">#}
+            <meta name="referrer" content="never">
+            <span class="text-danger" id="sentimentId"></span>
+            <div id="box" style="width: 600px;height:400px;"></div>
+        </div>
+        <div id="canvas-container" class="col-lg-8 container">
+            <canvas id="canvas" width="1000px" height="500px"></canvas>
+        </div>
+    </div>
+    </div>
+    <script>
+        // 虚拟按钮点击事件
+        function btnClick() {
+            alert("fuck you")
+        }
+
+        alert("开始爬取短评，请等待！")
+        $(document).ready(function () {
+
+            $.ajax({
+                type:"GET",
+                url:"/getImage",
+                data:{
+                    'movieId':{{ movieInfo.id }}
+                },
+                success: function (msg) {
+                    $('#fuck1').append(msg['imageF']);
+                },
+                error:function(msg){
+                    alert("加载图片失败")
+                }
+            })
+
+            {#$('#getCloud').click(function () {#}
+                {#var wordFreqData2 = [['各位观众', 45], ['词云', 21], ['来啦!!!', 13]];#}
+                {#alert({{ movieInfo.id }})#}
+                {#alert("开始爬取短评，请等待！")#}
+                {#drawLine([20],[80])#}
+                {#f(wordFreqData2)#}
+                $.ajax({
+                    type: "GET",
+                    url: "/wordCould",
+                    data: {
+                        'movieId': {{ movieInfo.id }}
+                    },
+                    success: function (msg) {
+                        console.log(msg)
+                        sent_str = msg['sentiment']
+                        sent = JSON.parse(sent_str)
+                        console.log(typeof (sent))
+                        $('#movie_id').html(msg['movieId'])
+
+                        $('#fuck2').append(msg['comment']);
+
+                        {#alert("正在进行数据处理")#}
+
+                        {#$('body').append(msg['imageF']);#}
+
+                        getWordCloud(msg['wordFreqData'])
+                        {#alert()#}
+                        if (sent['whole'] == 1)
+                            all_result = " 整体情感倾向呈正向"
+                        else
+                            all_result = " 整体情感倾向呈负向"
+                        all_commnent_sent = "所有评论 正面倾向得分：" + sent["pos"] + " 负面倾向得分：" + sent["neg"] + all_result
+                        {#$('#imgSent').attr('src',sent['imagePath'])#}
+                        {#$("#imgSent").show();#}
+                        $('#sentimentId').html(all_commnent_sent)
+                        drawLine([sent["pos"]], [sent["neg"]])
+
+                        {#alert("生成完成！")#}
+                        $('#cueHidden').hide()
+
+                    },
+                    error: function (msg) {
+                        alert("无已观看此电影的用户评论")
+                        console.log(msg)
+                    }
+                })
+
+        })
+
+        // 词云
+        function getWordCloud(wordFreqData) {
+
+            var canvas = document.getElementById('canvas');
+            var options = eval({
+                "list": wordFreqData,//或者[['各位观众',45],['词云', 21],['来啦!!!',13]],只要格式满足这样都可以
+                "gridSize": 10, // 密集程度 数字越小越密集
+                "weightFactor": 1.5, // 字体大小=原始大小*weightFactor
+                "maxFontSize": 100, //最大字号
+                "minFontSize": 80, //最小字号
+                "fontWeight": 'normal', //字体粗细
+                "fontFamily": 'Times, serif', // 字体
+                "color": 'random-light', // 字体颜色 'random-dark' 或者 'random-light'
+                "backgroundColor": '#333', // 背景颜色
+                "rotateRatio": 1 // 字体倾斜(旋转)概率，1代表总是倾斜(旋转)
+            });
+            //生成
+            WordCloud(canvas, options);
+        }
+
+        // 折线图
+        function drawLine(series_data_1, series_data_2) {
+
+
+            // 获取到这个DOM节点，然后初始化
+            var myChart = echarts.init(document.getElementById("box"));
+            // option 里面的内容基本涵盖你要画的图表的所有内容
+            var option = {
+                // 定义样式和数据
+                backgroundColor: '#FBFBFB',
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    {#data:['蒸发量','降水量']#}
+                    data: ["正面情感数量", "负面情感数量"]
+                },
+                {#calculable : true,#}
+                xAxis: [
+                    {
+                        {#name : '月份',#}
+                        name: "分数",
+                        type: 'category',
+                        {#data : ['','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']#}
+                        {#data:["正面情感数","负面情感数"]#}
+                    }
+                ],
+                yAxis: [
+                    {
+                        name: '数值',
+                        type: 'value',
+                        splitArea: {show: true}
+                    }
+                ],
+                series: [
+                    {
+                        name: '正面情感数量',
+                        type: 'bar',
+                        {#data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]#}
+                        data: series_data_1,
+                        label: {
+                            show: true, // 开启显示
+                            rotate: 70, // 旋转70度
+                            position: 'top', // 在上方显示
+                            distance: 20, // 距离图形元素的距离。当 position 为字符描述值（如 'top'、'insideRight'）时候有效。
+                            verticalAlign: 'middle',
+                            textStyle: { // 数值样式
+                                color: 'black',
+                                fontSize: 12
+                            }
+                        }
+                    },
+                    {
+                        name: '负面情感数量',
+                        type: 'bar',
+                        {#data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]#}
+                        data: series_data_2,
+                        label: {
+                            show: true, // 开启显示
+                            rotate: 70, // 旋转70度
+                            position: 'top', // 在上方显示
+                            distance: 20, // 距离图形元素的距离。当 position 为字符描述值（如 'top'、'insideRight'）时候有效。
+                            verticalAlign: 'middle',
+                            textStyle: { // 数值样式
+                                color: 'black',
+                                fontSize: 12
+                            }
+                        }
+                    }
+                ]
+            }
+            // 一定不要忘了这个，具体是干啥的我忘了，官网是这样写的使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+        }
+    </script>
+{% endblock %}

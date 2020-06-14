@@ -1,0 +1,34 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+
+    <div class="row container-fluid">
+        <div class="col-lg-3">
+            <ul>
+                <ol class="h4">皮尔森推荐结果</ol>
+                {% for pearson in pearson_list %}
+                    <ol>{{ pearson }}</ol>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-lg-3">
+            <ul>
+                <ol class="h4">knn推荐结果</ol>
+                {% for knn in knn_list %}
+                    <ol>{{ knn }}</ol>
+                {% endfor %}
+
+            </ul>
+        </div>
+        <div class="col-lg-3">
+            <ul>
+                <ol class="h4">svd推荐结果</ol>
+                {% for svd in svd_list %}
+                    <ol>{{ svd }}</ol>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+{% endblock %}

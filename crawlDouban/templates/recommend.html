@@ -1,0 +1,46 @@
+{% extends 'index.html' %}
+
+
+{% block content %}
+    <div id="container" class="container-fluid">
+        <table class="table table-condensed table-hover table-responsive ">
+            <thead>
+            <th>排序</th>
+            <th>名称&简介</th>
+            <th>海报</th>
+{#            <th>quota</th>#}
+            </thead>
+            <tbody>
+            {% for foo in top250 %}
+                <tr>
+                    <td>
+                        {{ forloop.counter }}
+                    </td>
+                    <td>{{ foo.name}}：<br>&emsp;&emsp;{{ foo.movieSynopsis }}</td></td>
+{#                    <td>{{ foo.img_src }}</td>#}
+{#                    <td>{{ foo.img_src }}</td>#}
+{#                    <div class="col-lg-4 container">#}
+                    <td><img src="{{ foo.img_src }}" alt="">
+                        <meta name="referrer" content="never">
+                    </td>
+{#                        <span class="text-danger" id="sentimentId"></span>#}
+{#                        <div id="box" style="width: 600px;height:400px;"></div>#}
+{#                    </div>#}
+{#                    <td>{{ foo.url }}</td>#}
+{#                    <td id="{{ foo.id }}"></td>#}
+                    <td>
+                        <form action="/search/" method="get">
+                            <div style="visibility: hidden;">
+                                <input type="text" value="{{ foo.name }}" name="movieName">
+                            </div>
+                            <input type="submit" class="btn-primary btn" value="查看影片信息">
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

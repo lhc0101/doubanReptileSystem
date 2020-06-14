@@ -1,0 +1,98 @@
+from crawlDouban.recommd import *
+def recommd(request):
+    movieName = request.GET['movieName']
+    print(movieName)
+
+    movie, movie_comment_info = readFile()
+
+    try:
+        movieId = movie.loc[movie['movieName'] == movieName]['movieId']
+        movieId = int(movieId)
+    except:
+        movieId = -1
+
+    movie.rename(columns={'_id': "movieId"}, inplace=True)
+    socre = {"力荐": 5, "推荐": 4, "还行": 3, "较差": 2, "很差": 1, None: None}
+    movie_comment_info['rating'] = movie_comment_info['rating'].apply(lambda row: socre[row])
+
+    # 计算每个电影的被评论次数，这里面的数据和数据库不一样是因为空值
+    rating_counts = pd.DataFrame(movie_comment_info.groupby('movieId').count()['rating'])
+    rating_counts.rename(columns={'rating': "ratingCount"}, inplace=True)
+
+    # 获取所有影评的评论数
+    movie_add_ratingCount = pd.merge(movie, rating_counts, on='movieId')
+
+    # 删除无用的列
+    del movie_add_ratingCount['imageUrl']
+    del movie_add_ratingCount['ImdbLink']
+    del movie_add_ratingCount['intro']
+    del movie_add_ratingCount['pianChang']
+    del movie_add_ratingCount['bianJu']
+    del movie_add_ratingCount['daoYan']
+    del movie_add_ratingCount['youMing']
+    del movie_add_ratingCount['yuYan']
+    del movie_add_ratingCount['pingFeng']
+    del movie_add_ratingCount['zhuYan']
+    del movie_add_ratingCount['shangYinRiQi']
+    del movie_add_ratingCount['zhiPianGuoJia']
+    del movie_add_ratingCount['leiXing']
+
+    # 获取所有影评的平均分
+    rating_means = pd.DataFrame(movie_comment_info.groupby('movieId').mean()['rating'])
+    rating_means.columns = ['rating_mean']
+    movie_total = pd.merge(movie_add_ratingCount, rating_means, on='movieId')
+    #   合并movie_comment_info, movie_add_ratingCount
+    combine_movie = pd.merge(movie_comment_info, movie_add_ratingCount, on='movieId')
+    combine_movie = combine_movie.dropna()  # 丢弃含有缺失值的行
+    # 获取 分位数
+    popularity_threshold = combine_movie.ratingCount.quantile(0.7)
+    # 根据位置进行筛选
+    rating_popular_movie = combine_movie.query('ratingCount >= @popularity_threshold')
+
+    movie_pivot_to_pearson = rating_popular_movie.pivot(
+        index='comment_user', columns='movieId', values='rating').fillna(0)
+    movie_pivot_to_knn_svd = rating_popular_movie.pivot(
+            index='movieId', columns='comment_user', values='rating').fillna(0)
+
+    # 这里要推荐的话不能直接用movie_1
+    movie_1 = movie_comment_info.groupby('movieId').count().sort_values('rating', ascending=False).index[0]
+
+    if movieId == -1:
+        movieId = movie_1
+
+    # 皮尔森系数
+    try:
+        movie_list = pearson_method(movie_total, movie_pivot_to_pearson, movieId, 6)
+        corr_movies_pearson = get_movie(movie_total, movie_list,movie_total)
+        pearson_result_list = list(corr_movies_pearson['movieName'])
+    except:
+        pearson_result_list= []
+
+    print(pearson_result_list)
+
+    #KNN
+    try:
+        movie_list = knn_method(movie_pivot_to_knn_svd, movieId, 6)
+        knn_corr_movies = get_movie(movie_total, movie_list,movie_total)
+        knn_result_list = list(knn_corr_movies['movieName'])
+    except:
+        knn_result_list = []
+    print(knn_result_list)
+
+    #SVD
+    try:
+        movie_list = SVD_method(movie_pivot_to_knn_svd, movieId, 6)
+        svd_corr_movies = get_movie(movie_total, movie_list,movie_total)
+        svd_result_list = list(svd_corr_movies['movieName'])
+    except:
+        svd_result_list = []
+    print(svd_result_list)
+
+    return render(
+        request,'recommdResult.html',
+        {
+            'pearson_list':pearson_result_list,
+            'knn_list':knn_result_list,
+            'svd_list':svd_result_list
+        }
+    )

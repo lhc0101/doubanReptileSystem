@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/wordcloud2.js/1.1.1/wordcloud2.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/4.7.0/echarts-en.common.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-default  ml-auto bg-dark navbar-dark  " role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">影视映像</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li>
+                <form class="form-inline " action="/search/" method="get">
+                    <input class="form-control" type="text" name="movieName" placeholder="输入电影名称">
+                    <input type="submit" class="btn-primary btn" value="搜索">
+                    {#        <input type="submit" class="btn-primary btn" value="热门">#}
+{#                    <input type="submit" class="btn-primary btn" value="推荐">#}
+                </form>
+            </li>
+        </ul>
+
+{#        <ul class="nav navbar-nav">#}
+{#            <li>#}
+{#                <form action="/recommend/" ,method="get" class="form-inline">#}
+{#                    <input class="form-control" type="text" name="movieName" placeholder="输入喜欢的电影名称">#}
+{#                    <input type="submit" class="btn-primary btn" value="推荐">#}
+{#                </form>#}
+{#            </li>#}
+{#        </ul>#}
+
+        <ul class="nav navbar-nav">
+            <li>
+                <form action="/hot/" ,method="get" class="form-inline">
+                    <input type="submit" class="btn-primary btn" value="热门">
+                </form>
+            </li>
+        </ul>
+        {##}
+        {#    <form action="/recommd/" ,method="get" class="form-inline ">#}
+        {#        <input type="submit" class="btn-primary btn" value="推荐">#}
+        {#    </form>#}
+    </div>
+</nav>
+
+<meta name="referrer" content="never">
+
+{% block content %}
+    <div>这里是默认内容，所有继承自这个模板的，如果不覆盖就显示这里的默认内容。</div>
+{% endblock %}
+
+</body>
+</html>

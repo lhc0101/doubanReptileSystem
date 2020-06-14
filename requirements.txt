@@ -1,0 +1,7 @@
+Django==3.0.3
+mongoengine==0.19.1
+pyquery==1.4.1
+jieba==0.42.1
+numpy==1.17.4
+requests==2.22.0
+beautifulsoup4==4.9.0
